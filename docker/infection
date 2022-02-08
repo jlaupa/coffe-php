@@ -1,0 +1,8 @@
+#!/bin/bash
+
+docker run -it --rm                                   \
+    --name my-running-script                          \
+    -v "$PWD":/usr/src                                \
+    -w /usr/src                                       \
+    -e XDEBUG_MODE=coverage                           \
+    coffee-machine.php-cli php vendor/bin/infection $@

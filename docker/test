@@ -1,0 +1,9 @@
+#!/bin/bash
+
+docker run -it --rm                                 \
+    --name my-running-script                        \
+    --network coffee-machine_net                    \
+    -v "$PWD":/usr/src                              \
+    -e XDEBUG_MODE=coverage                         \
+    -w /usr/src                                     \
+    coffee-machine.php-cli php vendor/bin/phpunit $@

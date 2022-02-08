@@ -1,0 +1,16 @@
+{
+    "require": {
+        "symfony/console": "^5.2",
+        "phpunit/phpunit": "^9.5"
+    },
+    "require-dev": {
+        "infection/infection": "^0.21"
+    },
+    "autoload": {
+        "psr-4": {
+            "GetWith\\CoffeeMachine\\": "src",
+            "GetWith\\CoffeeMachine\\Tests\\Unit\\": "tests/Unit",
+            "GetWith\\CoffeeMachine\\Tests\\Integration\\": "tests/Integration"
+        }
+    }
+}
