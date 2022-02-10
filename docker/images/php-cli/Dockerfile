@@ -1,4 +1,11 @@
-FROM php:7.3-fpm
+FROM php:7.4-fpm
+RUN apt-get update && apt-get install -y \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libpng-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd
+
 RUN apt-get update && apt-get install -y apt-transport-https
 RUN apt-get update \
     && apt-get -y install libssl-dev libc-client2007e-dev libkrb5-dev curl git \
@@ -8,7 +15,7 @@ RUN apt-get update \
     RUN apt-get install -y \
             libzip-dev \
             zip \
-      && docker-php-ext-configure zip --with-libzip \
+      && docker-php-ext-configure zip \
       && docker-php-ext-install zip
 
 # Install Postgre PDO

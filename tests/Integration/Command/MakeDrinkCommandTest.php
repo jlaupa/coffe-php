@@ -1,6 +1,6 @@
 <?php
 
-namespace GetWith\CoffeeMachine\Tests\Integration\Console;
+namespace GetWith\CoffeeMachine\Tests\Integration\Command;
 
 
 use GetWith\CoffeeMachine\App\Application\MakeDrinkCommand;
@@ -18,7 +18,7 @@ class MakeDrinkCommandTest extends IntegrationTestCase
 
         $this->application->add(
             new MakeDrinkCommand(
-                new Drink(), 
+                new Drink(),
                 new PostgreSQLOrderRepository(new Order())
             )
         );

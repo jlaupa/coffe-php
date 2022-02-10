@@ -6,8 +6,8 @@ Coffee Machine is an awesome console application that from a few input parameter
 
 Command
 ```
-app:order-drink 
-
+app:drink-sold   money from drinks sold.
+app:order-drink  take drink orders.
 ```
 
 Arguments
@@ -103,18 +103,24 @@ Something like the following table would be great:
 
 Install and run the application.
 ```
-docker/composer install
-docker/build
+1.- make up / make stop
+2.- make console
+
+only in console:
+3.- composer install
+4.- php index.php
+
+Please execute on your client PostgreSQL
+5.- docker/images/postgre/init.sql 
 ```
 
-Examples of the use of the application.
+Examples of the use of the application in console.
 ```
-docker/console app:order-drink tea 0.5 1 -e
-docker/console app:order-drink coffee 0.5
-docker/console app:order-drink chocolate 1 --extra-hot
+php index.php app:order-drink tea 0.5 1 -e
+php index.php app:order-drink coffee 0.5
+php index.php app:order-drink chocolate 1 --extra-hot
 ```
 
 Run tests
 ```
-docker/test
-```
+make test

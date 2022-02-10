@@ -3,39 +3,42 @@ version: '3'
 services:
     nginx-api:
         image: nginx:latest
-        container_name: coffeee-nginx
+        container_name: coffee-nginx
         ports:
             - "8097:80"
         volumes:
             - ./:/var/www/html
             - ./docker/images/nginx/conf.d:/etc/nginx/conf.d
         networks:
-            - coffeee_net
+            - coffee_net
 
-    mysql:
-        image: coffeee.mysql
-        container_name: coffeee.mysql
-        environment:
-            MYSQL_ROOT_PASSWORD: 'coffeee'
-            MYSQL_DATABASE: 'coffeee'
-            MYSQL_USER: 'coffeee'
-            MYSQL_PASSWORD: 'coffeee'
+    postgre-api:
+        image: postgres:11.5
+        container_name: coffe-postgre
         ports:
-            - "3305:3306"
+            - "5453:5432"
+        environment:
+            POSTGRES_PASSWORD: coffee
+            POSTGRES_USER: coffee
+        volumes:
+            - postgree-coffee-vol:/var/lib/postgresql/data
         networks:
-            coffeee_net:
-        tty: true
+            -  coffee_net
 
-    coffeee_php-cli:
+    coffee_php-cli:
         build: docker/images/php-cli
-        container_name: coffeee_php-cli
+        container_name: coffee_php-cli
         volumes:
             - ./:/var/www/html
         networks:
-            - coffeee_net
+            - coffee_net
         expose:
             - 9000
 
 networks:
-    coffeee_net:
+    coffee_net:
         external: true
+volumes:
+    data:
+        driver: "local"
+    postgree-coffee-vol:
