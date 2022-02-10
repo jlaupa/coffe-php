@@ -10,24 +10,9 @@ use GetWith\CoffeeMachine\Shared\Infrastructure\PostgreSQLPdoClient;
 class PostgreSQLOrderRepository implements OrderRepositoryInterface
 {
     /**
-     * @var Order
-     */
-    protected Order $order;
-
-    /**
-     * Repository constructor.
-     *
-     * @param Order $order
-     */
-    public function __construct(Order $order)
-    {
-        $this->order = $order;
-    }
-
-    /**
      * @return array
      * Refactor to queryBus
-     * Return Collection Orders
+     * Return Collection OrdersByDrinkType
      */
     public function getOrdersByDrinkType(): array
     {
@@ -41,20 +26,18 @@ class PostgreSQLOrderRepository implements OrderRepositoryInterface
     }
 
     /**
-     * @param array $params
-     * Entity Order
      * persist
      * flush
      */
-    public function save(array $params): void
+    public function save(Order $order): void
     {
+        $orderPersist = $order->toArray();
+
         $pdo = PostgreSQLPdoClient::getPdo();
         $sql = 'INSERT INTO orders(drink_type, sugars, stick, extra_hot)
                 VALUES (:drink_type, :sugars, :stick, :extra_hot)';
-        $stmt= $pdo->prepare($sql);
-        $stmt->execute($params);
+        $stmt = $pdo->prepare($sql);
 
-        //ideal
-        //return $this->db->insert(self::ORDERS, $orders->toPersistence());
+        $stmt->execute($orderPersist);
     }
 }

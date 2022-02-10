@@ -7,6 +7,7 @@ use GetWith\CoffeeMachine\App\Domain\OrderRepositoryInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class DrinksSoldCommand extends Command
 {
@@ -14,22 +15,30 @@ class DrinksSoldCommand extends Command
 
     private OrderRepositoryInterface $orderRepository;
 
-    public function __construct(OrderRepositoryInterface $orderRepository, string $name = null)
+    public function __construct(OrderRepositoryInterface $orderRepository)
     {
-        parent::__construct($name);
+        parent::__construct();
         $this->orderRepository = $orderRepository;
     }
 
-
-    protected function execute(InputInterface $input, OutputInterface $output):void
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
+        //FindOrdersByDrinkQuery
+        //FindOrdersByDrinkQueryHandle
         $ordersByDrink = $this->orderRepository->getOrdersByDrinkType();
-        $padLength = 15;
-        $output->writeln(str_pad("Drink", $padLength, '_') . "Money");
-        foreach ($ordersByDrink as $orderByDrink) {
-            $totalAmount = $orderByDrink['count'] * Drink::PRICES[$orderByDrink['drink_type']];
-            $drinkType = str_pad($orderByDrink['drink_type'], $padLength, '_');
-            $output->writeln("$drinkType-$totalAmount");
+        $drinkSoldResponse = [];
+        foreach ($ordersByDrink as $key => $orderByDrink) {
+            /// $rows[$key][] = $orderByDrink->getDrinkType();
+            /// $rows[$key][] = $orderByDrink->getMoney();
+            $drinkSoldResponse[$key][] = $orderByDrink['drink_type'];
+            $drinkSoldResponse[$key][] = $orderByDrink['count'] * Drink::PRICES[$orderByDrink['drink_type']];
         }
+
+        //return DrinkSoldCommandResponse($input, $output)
+        $io = new SymfonyStyle($input, $output);
+        $io->table(
+            ['Drink', 'Money'],
+            $drinkSoldResponse
+        );
     }
 }

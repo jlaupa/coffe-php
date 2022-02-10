@@ -2,10 +2,7 @@
 
 namespace GetWith\CoffeeMachine\Tests\Integration\Command;
 
-
 use GetWith\CoffeeMachine\App\Application\MakeDrinkCommand;
-use GetWith\CoffeeMachine\App\Domain\Drink;
-use GetWith\CoffeeMachine\App\Domain\Order;
 use GetWith\CoffeeMachine\App\Infrastructure\PostgreSQLOrderRepository;
 use GetWith\CoffeeMachine\Tests\Integration\IntegrationTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -18,8 +15,7 @@ class MakeDrinkCommandTest extends IntegrationTestCase
 
         $this->application->add(
             new MakeDrinkCommand(
-                new Drink(),
-                new PostgreSQLOrderRepository(new Order())
+                new PostgreSQLOrderRepository()
             )
         );
     }

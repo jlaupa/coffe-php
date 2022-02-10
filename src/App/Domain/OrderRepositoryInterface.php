@@ -10,9 +10,5 @@ interface OrderRepositoryInterface
      */
     public function getOrdersByDrinkType(): array;
 
-
-    /**
-     * @param array $params
-     */
-    public function save(array $params): void;
+    public function save(Order $order): void;
 }

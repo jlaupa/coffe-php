@@ -3,9 +3,9 @@
 namespace GetWith\CoffeeMachine\App\Application;
 
 use GetWith\CoffeeMachine\App\Domain\Exceptions\MakeDrinkValidationException;
-use GetWith\CoffeeMachine\App\Domain\DrinkInterface;
 use GetWith\CoffeeMachine\App\Domain\Order;
 use GetWith\CoffeeMachine\App\Domain\OrderRepositoryInterface;
+use GetWith\CoffeeMachine\Validations\OrderValidation;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,20 +21,12 @@ class MakeDrinkCommand extends Command
 
     protected static $defaultName = 'app:order-drink';
 
-    private DrinkInterface $drink;
-
-    /**
-     * @var Order
-     */
-    private $orderRepository;
+    private OrderRepositoryInterface $orderRepository;
 
     public function __construct(
-        DrinkInterface $drink,
-        OrderRepositoryInterface $orderRepository,
-        string $name = null
+        OrderRepositoryInterface $orderRepository
     ) {
-        parent::__construct($name);
-        $this->drink = $drink;
+        parent::__construct();
         $this->orderRepository = $orderRepository;
     }
 
@@ -104,28 +96,16 @@ class MakeDrinkCommand extends Command
         $extraHot = (int) $input->getOption(self::EXTRA_HOT);
         //BeginTransaction
         try {
-            $this->drink->validateDrinkType($drinkType);
-            $this->drink->evaluateCost($drinkType, $money);
-            $this->drink->validateSugar($sugars);
+            $order = new Order($drinkType, $money, $sugars, $extraHot);
 
-            $output->write('You have ordered a ' . $drinkType);
-            if ($extraHot) {
-                $output->write(' extra hot');
-            }
+            $this->validateRequest($order);
 
-            if ($sugars !== 0) {
-                $output->write(' with ' . $sugars . ' sugars (stick included)');
-            }
+            //OrderCommand
+            //OrderCommandHandler
+            $this->orderRepository->save($order);
 
-            $output->writeln('');
-
-            $this->orderRepository->save([
-                'drink_type' => $drinkType,
-                'sugars' => $sugars,
-                'stick' => (int) ($sugars > 0),
-                'extra_hot' => $extraHot,
-            ]);
             //BeginTransaction::commit
+            $this->printReturn($output, $order);
         } catch (MakeDrinkValidationException $makeDrinkValidationException) {
             //BeginTransaction::rollback
             $output->writeln($makeDrinkValidationException->getMessage());
@@ -133,5 +113,26 @@ class MakeDrinkCommand extends Command
             //BeginTransaction::rollback
             throw new \RuntimeException("SENTRY_LOG: ". $e->getMessage());
         }
+    }
+
+    private function validateRequest(Order $order): void
+    {
+        $validation = new OrderValidation($order);
+        $validation->execute();
+    }
+
+    private function printReturn(OutputInterface $output, Order $order): void
+    {
+        $message = sprintf('You have ordered a %s', $order->getDrinkType());
+
+        if ($order->getExtraHot()) {
+            $message .= ' extra hot';
+        }
+
+        if ($order->getSugars() !== 0) {
+            $message .= sprintf(' with %u sugars (stick included)', $order->getSugars());
+        }
+
+        $output->writeln($message);
     }
 }
